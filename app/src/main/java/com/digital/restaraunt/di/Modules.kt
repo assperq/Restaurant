@@ -1,5 +1,8 @@
 package com.digital.restaraunt.di
 
+import com.digital.registration.data.AuthRepositoryImpl
+import com.digital.registration.domain.AuthRepository
+import com.digital.registration.presentation.AuthViewModel
 import com.digital.reservations.data.ReservationRepositoryImpl
 import com.digital.reservations.domain.ReservationRepository
 import com.digital.reservations.presentation.ReservationViewModel
@@ -15,7 +18,7 @@ val supabaseModule = module {
     single<SupabaseClient> {
         createSupabaseClient(
             supabaseUrl = "URL",
-            supabaseKey = "KEY",
+            supabaseKey = "KEY"
         ) {
             install(Auth)
             install(Postgrest)
@@ -28,4 +31,10 @@ val reservationModule = module {
     includes(supabaseModule)
     single<ReservationRepository> { ReservationRepositoryImpl(get()) }
     viewModel<ReservationViewModel> { ReservationViewModel(get()) }
+}
+
+val authModule = module {
+    includes(supabaseModule)
+    single<AuthRepository> { AuthRepositoryImpl(get()) }
+    viewModel<AuthViewModel> { AuthViewModel(get()) }
 }

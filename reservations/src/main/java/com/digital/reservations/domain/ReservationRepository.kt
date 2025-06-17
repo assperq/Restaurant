@@ -4,5 +4,5 @@ import kotlinx.datetime.Instant
 
 interface ReservationRepository {
     suspend fun getTables(date : Instant) : List<Table>
-    suspend fun reserveTable(table : Table, date : Instant) : Boolean
+    suspend fun reserveTable(tableId: Int, userId: String, peopleCount: Int, date: Instant) : Boolean
 }

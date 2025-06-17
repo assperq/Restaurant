@@ -19,18 +19,30 @@ import kotlinx.datetime.plus
 class ReservationViewModel(
     private val repository: ReservationRepository
 ) : ViewModel() {
+    private val _state : MutableStateFlow<State> = MutableStateFlow(State.Default)
+    val state = _state.asStateFlow()
 
-    private val _tables : MutableStateFlow<List<Table>> = MutableStateFlow(emptyList())
-    val tables = _tables.asStateFlow()
+    sealed class State() {
+        data object Default : State()
+        data class Success(val list : List<Table>) : State()
+        data object Loading : State()
+    }
 
     init {
-        val tomorrow = Clock.System.now().plus(DateTimePeriod(days = 1), TimeZone.currentSystemDefault())
+        val tomorrow = System.now().plus(DateTimePeriod(days = 1), TimeZone.currentSystemDefault())
         fetchTables(tomorrow)
     }
 
     fun fetchTables(date : Instant) {
         viewModelScope.launch {
-            _tables.value = repository.getTables(date)
+            _state.value = State.Loading
+            _state.value = State.Success(repository.getTables(date))
+        }
+    }
+
+    fun reserveTable(tableId : Int, userId : String, peopleCount : Int, date : Instant) {
+        viewModelScope.launch {
+            val res = repository.reserveTable(tableId, userId, peopleCount, date)
         }
     }
 }

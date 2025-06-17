@@ -8,5 +8,7 @@ import kotlinx.serialization.Serializable
 data class TableDto(
     @SerialName("id") val id : Int,
     @SerialName("waiter_id") val waiterId : Int,
-    @SerialName("virtual_status") val status : String
+    @SerialName("virtual_status") val status : String,
+    @SerialName("x") val x : Int,
+    @SerialName("y") val y : Int
 )

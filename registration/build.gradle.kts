@@ -1,21 +1,18 @@
 plugins {
-    alias(libs.plugins.android.application)
+    alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
 }
 
 android {
-    namespace = "com.digital.restaraunt"
+    namespace = "com.digital.registration"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.digital.restaraunt"
         minSdk = 26
-        targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles("consumer-rules.pro")
     }
 
     buildTypes {
@@ -37,10 +34,12 @@ android {
     buildFeatures {
         compose = true
     }
+    composeOptions {
+        kotlinCompilerExtensionVersion = libs.versions.composeBom.get()
+    }
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -59,18 +58,17 @@ dependencies {
 
     implementation(libs.androidx.navigation.compose)
     implementation(libs.koin.core)
-    testImplementation(libs.koin.test)
     implementation(libs.koin.androidx.compose)
     implementation(libs.koin.androidx.compose.viewmodel)
     implementation(libs.koin.android)
+    testImplementation(libs.koin.test)
+
+    implementation(libs.kotlinx.datetime)
 
     implementation(platform(libs.supabase.bom))
     implementation(libs.supabase.postgrest.kt)
     implementation(libs.supabase.auth.kt)
     implementation(libs.supabase.realtime.kt)
 
-    implementation(libs.ktor.client.cio)
-
-    implementation(project(":reservations"))
-    implementation(project(":registration"))
+    implementation(libs.kotlinx.serialization.json)
 }
