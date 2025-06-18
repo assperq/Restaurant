@@ -2,6 +2,7 @@ package com.digital.restaraunt
 
 import android.app.Application
 import com.digital.restaraunt.di.authModule
+import com.digital.restaraunt.di.profileModule
 import com.digital.restaraunt.di.reservationModule
 import com.digital.restaraunt.di.supabaseModule
 import org.koin.android.ext.koin.androidContext
@@ -15,7 +16,8 @@ class RestaurantApplication : Application() {
             modules(
                 supabaseModule,
                 reservationModule,
-                authModule
+                authModule,
+                profileModule
             )
         }
     }

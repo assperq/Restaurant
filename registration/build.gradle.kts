@@ -71,4 +71,6 @@ dependencies {
     implementation(libs.supabase.realtime.kt)
 
     implementation(libs.kotlinx.serialization.json)
+
+    implementation(project(":profile"))
 }

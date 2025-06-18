@@ -14,12 +14,12 @@ navigationCompose = "2.9.0"
 
 kotlinxDatetime = "0.6.2"
 kotlinxSerializationJson = "1.8.1"
-ktorClientAndroid = "3.2.0"
-ktorClientOkhttp = "3.2.0"
 bom = "3.1.1"
 koinCore = "4.0.3"
 koinTest = "3.2.0-beta-1"
 
+accompanistPagerIndicators = "0.28.0"
+foundationDesktop = "1.7.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -57,6 +57,11 @@ supabase-postgrest-kt = { module = "io.github.jan-tennert.supabase:postgrest-kt"
 supabase-realtime-kt = { module = "io.github.jan-tennert.supabase:realtime-kt" }
 
 ktor-client-cio = { module = "io.ktor:ktor-client-cio", version = "3.0.0-rc-1" }
+
+accompanist-navigation-animation = { module = "com.google.accompanist:accompanist-navigation-animation", version.ref = "accompanistPagerIndicators" }
+accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanistPagerIndicators" }
+accompanist-pager-indicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanistPagerIndicators" }
+androidx-foundation-desktop = { group = "androidx.compose.foundation", name = "foundation-desktop", version.ref = "foundationDesktop" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

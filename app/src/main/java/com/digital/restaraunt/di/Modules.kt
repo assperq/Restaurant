@@ -1,5 +1,8 @@
 package com.digital.restaraunt.di
 
+import com.digital.profile.data.ProfileRepositoryImpl
+import com.digital.profile.domain.ProfileRepository
+import com.digital.profile.presentation.ProfileViewModel
 import com.digital.registration.data.AuthRepositoryImpl
 import com.digital.registration.domain.AuthRepository
 import com.digital.registration.presentation.AuthViewModel
@@ -13,6 +16,8 @@ import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.realtime.Realtime
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
+import java.lang.invoke.VarHandle.AccessMode.GET
+import kotlin.math.sin
 
 val supabaseModule = module {
     single<SupabaseClient> {
@@ -28,13 +33,16 @@ val supabaseModule = module {
 }
 
 val reservationModule = module {
-    includes(supabaseModule)
     single<ReservationRepository> { ReservationRepositoryImpl(get()) }
-    viewModel<ReservationViewModel> { ReservationViewModel(get()) }
+    viewModel<ReservationViewModel> { ReservationViewModel(get(), get()) }
 }
 
 val authModule = module {
-    includes(supabaseModule)
     single<AuthRepository> { AuthRepositoryImpl(get()) }
-    viewModel<AuthViewModel> { AuthViewModel(get()) }
+    viewModel<AuthViewModel> { AuthViewModel(get(), get()) }
+}
+
+val profileModule = module {
+    single<ProfileRepository> { ProfileRepositoryImpl(get()) }
+    single<ProfileViewModel> { ProfileViewModel(get()) }
 }

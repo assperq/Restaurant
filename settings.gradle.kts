@@ -23,3 +23,4 @@ rootProject.name = "Restaraunt"
 include(":app")
 include(":reservations")
 include(":registration")
+include(":profile")

@@ -1,20 +1,15 @@
 package com.digital.reservations.data
 
-import android.R.attr.x
-import androidx.compose.ui.input.key.Key.Companion.I
-import androidx.compose.ui.text.toUpperCase
+
 import com.digital.reservations.domain.ReservationRepository
 import com.digital.reservations.domain.Table
 import com.digital.reservations.domain.TableStatus
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.postgrest
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.encodeToJsonElement
-import java.time.temporal.TemporalQueries.zone
-import java.util.Locale
 
 class ReservationRepositoryImpl(
     supabaseClient : SupabaseClient
@@ -22,7 +17,7 @@ class ReservationRepositoryImpl(
 
     private val postgrest = supabaseClient.postgrest
 
-    override suspend fun getTables(date: Instant): List<Table> {
+    override suspend fun getTables(date: LocalDate): List<Table> {
         return postgrest.rpc(
             function = "get_tables_with_virtual_status",
             parameters = buildJsonObject {
@@ -43,9 +38,10 @@ class ReservationRepositoryImpl(
         tableId: Int,
         userId: String,
         peopleCount: Int,
-        date: Instant
+        date: LocalDate
     ): Boolean {
-        return postgrest.rpc(
+
+        val response = postgrest.rpc(
             function = "try_reserve_table",
             parameters = buildJsonObject {
                 put("p_table_id", Json.encodeToJsonElement(tableId))
@@ -53,6 +49,7 @@ class ReservationRepositoryImpl(
                 put("p_reservation_date", Json.encodeToJsonElement(date))
                 put("p_people_count", Json.encodeToJsonElement(peopleCount))
             }
-        ).decodeSingle()
+        )
+        return return Json.decodeFromString<Boolean>(response.data)
     }
 }

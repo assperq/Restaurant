@@ -1,8 +1,9 @@
 package com.digital.reservations.domain
 
 import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
 
 interface ReservationRepository {
-    suspend fun getTables(date : Instant) : List<Table>
-    suspend fun reserveTable(tableId: Int, userId: String, peopleCount: Int, date: Instant) : Boolean
+    suspend fun getTables(date : LocalDate) : List<Table>
+    suspend fun reserveTable(tableId: Int, userId: String, peopleCount: Int, date: LocalDate) : Boolean
 }

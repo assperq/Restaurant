@@ -3,6 +3,8 @@ package com.digital.registration.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.digital.profile.domain.ProfileRepository
+import com.digital.profile.presentation.ProfileViewModel
 import com.digital.registration.domain.AuthRepository
 import com.digital.registration.presentation.navigation.AuthRoutes
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -14,7 +16,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class AuthViewModel(
-    private val repository: AuthRepository
+    private val repository: AuthRepository,
+    private val profileViewModel: ProfileViewModel
 ) : ViewModel() {
 
     private val _state : MutableStateFlow<State> = MutableStateFlow(State.DefaultState)
@@ -40,6 +43,7 @@ class AuthViewModel(
             StringChecker.checkPassword(password)
             repository.signIn(email, password)
             _state.value = State.Success(AuthRoutes.SignInRoute.route)
+            profileViewModel.fetchProfile()
         }
     }
 
@@ -53,6 +57,7 @@ class AuthViewModel(
             StringChecker.checkPassword(password)
             repository.signUp(email, password, contactInfo)
             _state.value = State.Success(AuthRoutes.SignUpRoute.route)
+            profileViewModel.fetchProfile()
         }
     }
 
