@@ -65,7 +65,7 @@ dependencies {
     implementation(libs.supabase.auth.kt)
     implementation(libs.supabase.realtime.kt)
 
-    implementation("androidx.compose.material:material-icons-extended:1.7.8")
+    implementation(libs.androidx.material.icons.extended)
 
     implementation(libs.kotlinx.serialization.json)
 }

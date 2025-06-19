@@ -64,6 +64,7 @@ class AuthViewModel(
     fun signOut() {
         authScope.launch {
             repository.signOut()
+            profileViewModel.clearUser()
         }
     }
 

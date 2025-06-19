@@ -13,8 +13,12 @@ import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.digital.order.presentation.navigation.OrderRoutes
+import com.digital.order.presentation.screens.OrderScreen
+import com.digital.profile.domain.Profile
 import com.digital.profile.presentation.ProfileViewModel
 import com.digital.profile.presentation.navigation.ProfileRoutes
+import com.digital.profile.presentation.screens.AllReservationsScreen
 import com.digital.profile.presentation.screens.ProfileScreen
 import com.digital.registration.presentation.AuthViewModel
 import com.digital.registration.presentation.navigation.AuthRoutes
@@ -80,7 +84,7 @@ fun SetupNavGraph(
                 }
                 is AuthViewModel.State.Success -> {
                     showLoadingDialog = false
-                    navController.navigate(ReservationRoutes.Reservation.route) {
+                    navController.navigate(AuthRoutes.MainRoute.route) {
                         popUpTo(it.route) { inclusive = true }
                         popUpTo(AuthRoutes.MainRoute.route) { inclusive = true }
                     }
@@ -112,12 +116,14 @@ fun SetupNavGraph(
                 ProfileScreen(
                     profile = user.value!!,
                     onLogout = {
-                        profileViewModel.clearUser()
                         authViewModel.signOut()
                     },
                     onViewAllReservations = {
-
+                        navController.navigate(ProfileRoutes.AllReservationRoute.route)
                     },
+                    onViewAllOrders = {
+
+                    }
                 )
             }
         }
@@ -132,6 +138,18 @@ fun SetupNavGraph(
             RegistrationScreen(onNavigateBack = {
                 navController.navigateUp()
             }, authViewModel)
+        }
+
+        composable(ProfileRoutes.AllReservationRoute.route) {
+            AllReservationsScreen {
+                navController.navigateUp()
+            }
+        }
+
+        composable(OrderRoutes.MainOrderRoute.route) {
+            OrderScreen(
+                onOrderSuccess = {}
+            )
         }
     }
 }

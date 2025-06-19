@@ -32,6 +32,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.digital.profile.domain.ReservationModel
 import com.digital.profile.domain.ReservationStatus
+import com.digital.profile.presentation.getDateFromInstant
+import com.digital.profile.presentation.getTimeFromInstant
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.format
 import kotlinx.datetime.format.DateTimeFormat
@@ -40,7 +42,8 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun ReservationCard(
     reservation: ReservationModel,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    modifier: Modifier? = null
 ) {
     val statusColor = statusColor(reservation.status)
     val icon = when (reservation.status) {
@@ -50,10 +53,11 @@ fun ReservationCard(
     }
 
     Card(
-        modifier = Modifier
-            .width(180.dp)
-            .height(120.dp)
-            .clickable { onClick() },
+        modifier = modifier?.height(120.dp)?.clickable { onClick() }
+            ?: Modifier
+                .width(180.dp)
+                .height(120.dp)
+                .clickable { onClick() },
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant
@@ -84,7 +88,7 @@ fun ReservationCard(
                 )
 
                 Text(
-                    text = "Дата: ${reservation.reservationDate}",
+                    text = "Дата: ${getDateFromInstant(reservation.reservationDate)}",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

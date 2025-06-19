@@ -5,6 +5,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.RestaurantMenu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -18,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.digital.order.presentation.navigation.OrderRoutes
 import com.digital.registration.presentation.navigation.AuthRoutes
 import com.digital.reservations.presentation.navigation.ReservationRoutes
 import com.digital.reservations.presentation.screens.ReservationScreen
@@ -26,7 +28,8 @@ import com.digital.reservations.presentation.screens.ReservationScreen
 fun BottomBar(navController : NavController) {
     val items = listOf(
         NavItem("Бронирование", ReservationRoutes.Reservation.route, Icons.Default.CalendarMonth),
-        NavItem("Профиль", AuthRoutes.MainRoute.route, Icons.Default.Person),
+        NavItem("Меню", OrderRoutes.MainOrderRoute.route, Icons.Default.RestaurantMenu),
+        NavItem("Профиль", AuthRoutes.MainRoute.route, Icons.Default.Person)
     )
 
     NavigationBar {

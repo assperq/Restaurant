@@ -10,6 +10,7 @@ activityCompose = "1.8.0"
 composeBom = "2024.09.00"
 appcompat = "1.6.1"
 material = "1.10.0"
+materialIconsExtended = "1.7.8"
 navigationCompose = "2.9.0"
 
 kotlinxDatetime = "0.6.2"
@@ -21,8 +22,11 @@ koinTest = "3.2.0-beta-1"
 accompanistPagerIndicators = "0.28.0"
 foundationDesktop = "1.7.0"
 
+kamelImage = "1.0.3"
+
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -62,6 +66,9 @@ accompanist-navigation-animation = { module = "com.google.accompanist:accompanis
 accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanistPagerIndicators" }
 accompanist-pager-indicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanistPagerIndicators" }
 androidx-foundation-desktop = { group = "androidx.compose.foundation", name = "foundation-desktop", version.ref = "foundationDesktop" }
+
+kamel-image = { module = "media.kamel:kamel-image", version.ref = "kamelImage" }
+kamel-image-default = { module = "media.kamel:kamel-image-default", version.ref = "kamelImage" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

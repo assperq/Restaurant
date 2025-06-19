@@ -1,32 +1,37 @@
 package com.digital.profile.data
 
+import com.digital.profile.domain.DishEntry
+import com.digital.profile.domain.OrderDetail
+import com.digital.profile.domain.OrderStatus
 import com.digital.profile.domain.Profile
 import com.digital.profile.domain.ProfileRepository
 import com.digital.profile.domain.ReservationModel
 import com.digital.profile.domain.ReservationStatus
+import com.digital.profile.domain.UserOrder
 import com.digital.profile.domain.UserRole
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.postgrest
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalDateTime.Companion
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.encodeToJsonElement
-
-private const val CACHE_DURATION_MS = 5 * 60 * 1000
+import kotlin.collections.first
+import kotlin.collections.map
 
 class ProfileRepositoryImpl(
     private val supabaseClient: SupabaseClient
 ) : ProfileRepository {
     private var cachedProfile: Profile? = null
-    private var lastFetchTime: Long = 0
 
     override suspend fun getCurrentUser(): Profile? {
         val currentUser = supabaseClient.auth.currentUserOrNull() ?: return null
 
-        if (cachedProfile != null &&
-            System.currentTimeMillis() - lastFetchTime < CACHE_DURATION_MS) {
+        if (cachedProfile != null) {
             return cachedProfile
         }
 
@@ -42,7 +47,6 @@ class ProfileRepositoryImpl(
         )
 
         cachedProfile = profile
-        lastFetchTime = System.currentTimeMillis()
 
         return profile
     }
@@ -77,8 +81,80 @@ class ProfileRepositoryImpl(
         )
     }
 
+    override suspend fun updateOrderStatus(
+        orderId: Int,
+        status: OrderStatus
+    ) {
+        supabaseClient.postgrest.from("orders").update(mapOf("status" to status.name.lowercase())) {
+            filter {
+                eq("id", orderId)
+            }
+        }
+    }
+
+    override suspend fun getUserOrders(userId: String) : List<UserOrder> {
+        return supabaseClient.postgrest.rpc(
+            "get_user_orders",
+            buildJsonObject {
+                put("p_user_id", Json.encodeToJsonElement(userId))
+            }
+        ).decodeList<OrderModelDto>().map {
+            UserOrder(
+                id = it.id,
+                tableId = it.table_id,
+                waiterId = it.waiter_id,
+                userId = it.user_id.toString(),
+                orderDate = it.order_date.toLocalDateTime(TimeZone.currentSystemDefault()),
+                totalCost = it.total_cost.toLong(),
+                status = OrderStatus.valueOf(it.status.uppercase())
+            )
+        }
+    }
+
+    override suspend fun getOrdersToday(): List<UserOrder> {
+        return supabaseClient.postgrest.rpc(
+            "get_today_orders",
+        ).decodeList<OrderModelDto>().map {
+            UserOrder(
+                id = it.id,
+                tableId = it.table_id,
+                waiterId = it.waiter_id,
+                userId = it.user_id.toString(),
+                orderDate = it.order_date.toLocalDateTime(TimeZone.currentSystemDefault()),
+                totalCost = it.total_cost.toLong(),
+                status = OrderStatus.valueOf(it.status.uppercase())
+            )
+        }
+    }
+
+    override suspend fun getOrderDetails(orderId: Int): OrderDetail {
+        val result = supabaseClient.postgrest.rpc(
+            "get_order_details",
+            buildJsonObject {
+                put("p_order_id", Json.encodeToJsonElement(orderId))
+            }
+        ).decodeList<OrderDetailRow>()
+
+        if (result.isEmpty()) throw IllegalStateException("Order not found")
+
+        val first = result.first()
+
+        return OrderDetail(
+            orderId = first.orderId,
+            orderDate = first.orderDate.toLocalDateTime(TimeZone.currentSystemDefault()),
+            status = OrderStatus.valueOf(first.status.uppercase()),
+            totalCost = first.totalCost.toLong(),
+            waiterName = first.waiterName,
+            dishes = result.map {
+                DishEntry(
+                    name = it.dishName,
+                    quantity = it.quantity
+                )
+            }
+        )
+    }
+
     override fun clearCache() {
         cachedProfile = null
-        lastFetchTime = 0
     }
 }

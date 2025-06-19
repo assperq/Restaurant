@@ -1,5 +1,6 @@
 package com.digital.profile.presentation.screens
 
+import android.R.attr.order
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,6 +28,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,6 +38,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.digital.profile.domain.OrderDetail
 import com.digital.profile.domain.Profile
 import com.digital.profile.domain.ReservationModel
 import com.digital.profile.domain.ReservationStatus
@@ -50,16 +54,25 @@ fun ProfileScreen(
     onLogout : () -> Unit,
     profileViewModel: ProfileViewModel = koinViewModel(),
     onViewAllReservations: () -> Unit,
+    onViewAllOrders: () -> Unit
 ) {
     val reservations = profileViewModel.userReservations.collectAsState()
-
+    val orders = profileViewModel.userOrders.collectAsState()
     var selectedReservation by remember { mutableStateOf<ReservationModel?>(null) }
+    var selectedOrder = profileViewModel.orderDetails.collectAsStateWithLifecycle()
+    var showDialog by remember { mutableStateOf(false) }
 
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .padding(16.dp)
+    LaunchedEffect(profileViewModel) {
+        profileViewModel.fetchUserOrders()
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
     ) {
-        Box(modifier = Modifier.fillMaxWidth(),
+        Box(
+            modifier = Modifier.fillMaxWidth(),
             contentAlignment = Alignment.CenterEnd
         ) {
             IconButton(onClick = onLogout) {
@@ -72,6 +85,7 @@ fun ProfileScreen(
 
         Spacer(Modifier.height(16.dp))
 
+        // === Брони ===
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text("Брони", style = MaterialTheme.typography.titleSmall, fontSize = 22.sp, modifier = Modifier.weight(1f))
             TextButton(onClick = onViewAllReservations) {
@@ -83,10 +97,34 @@ fun ProfileScreen(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.height(100.dp)
         ) {
-            items (reservations.value.take(5)) { reservation ->
+            items(reservations.value.take(5)) { reservation ->
                 ReservationCard(
                     reservation = reservation,
                     onClick = { selectedReservation = reservation }
+                )
+            }
+        }
+
+        Spacer(Modifier.height(24.dp))
+
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text("История заказов", style = MaterialTheme.typography.titleSmall, fontSize = 22.sp, modifier = Modifier.weight(1f))
+            TextButton(onClick = onViewAllOrders) {
+                Text("Показать все →", fontSize = 18.sp)
+            }
+        }
+
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            items(orders.value.take(6)) { order ->
+                OrderCard(
+                    order,
+                    onClick = {
+                        showDialog = true
+                        profileViewModel.fetchOrderDetail(order.id)
+                    }
                 )
             }
         }
@@ -97,9 +135,7 @@ fun ProfileScreen(
             ReservationStatusDialog(
                 reservation,
                 profileRole = profile.role,
-                onDismissRequest = {
-                    selectedReservation = null
-                },
+                onDismissRequest = { selectedReservation = null },
                 onCancelReservation = {
                     profileViewModel.updateReservationStatus(reservation.id, ReservationStatus.CANCELLED)
                 },
@@ -108,5 +144,16 @@ fun ProfileScreen(
                 }
             )
         }
+    }
+
+    if (showDialog) {
+        OrderDetailDialog(
+            order = selectedOrder.value,
+            profile = profile,
+            onDismiss = { profileViewModel.clearOrderDetails(); showDialog = false },
+            onUpdateStatus = { newStatus, orderId ->
+                profileViewModel.updateOrderStatus(orderId, newStatus)
+            }
+        )
     }
 }
