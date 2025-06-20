@@ -75,7 +75,7 @@ fun TableItem(
                 y = tableCenterY - (tableSize / 2)
             )
             .background(backgroundColor, CircleShape)
-            .clickable(enabled = table.status == TableStatus.FREE) {
+            .clickable {
                 onTableClick(table)
             }
             .border(2.dp, colorScheme.outline, CircleShape),

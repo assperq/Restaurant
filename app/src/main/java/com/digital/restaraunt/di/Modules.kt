@@ -3,6 +3,8 @@ package com.digital.restaraunt.di
 import com.digital.order.data.OrderRepositoryImpl
 import com.digital.order.domain.OrderRepository
 import com.digital.order.presentation.OrderViewModel
+import com.digital.payment.data.PaymentInterfaceImpl
+import com.digital.payment.domain.PaymentInterface
 import com.digital.profile.data.ProfileRepositoryImpl
 import com.digital.profile.domain.ProfileRepository
 import com.digital.profile.presentation.ProfileViewModel
@@ -38,12 +40,12 @@ val supabaseModule = module {
 
 val reservationModule = module {
     single<ReservationRepository> { ReservationRepositoryImpl(get()) }
-    single<ReservationViewModel> { ReservationViewModel(get(), get()) }
+    viewModel<ReservationViewModel> { ReservationViewModel(get(), get()) }
 }
 
 val authModule = module {
     single<AuthRepository> { AuthRepositoryImpl(get()) }
-    single<AuthViewModel> { AuthViewModel(get(), get()) }
+    viewModel<AuthViewModel> { AuthViewModel(get(), get()) }
 }
 
 val profileModule = module {
@@ -53,5 +55,9 @@ val profileModule = module {
 
 val orderModule = module {
     single<OrderRepository> { OrderRepositoryImpl(get()) }
-    single<OrderViewModel> { OrderViewModel(get(), get(), get()) }
+    viewModel<OrderViewModel> { OrderViewModel(get(), get(), get(), get()) }
+}
+
+val paymentModule = module {
+    single<PaymentInterface> { PaymentInterfaceImpl() }
 }

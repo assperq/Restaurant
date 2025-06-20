@@ -8,17 +8,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.digital.profile.presentation.ProfileViewModel
-import com.digital.reservations.presentation.ReservationViewModel
-import com.digital.reservations.presentation.screens.ReservationScreen
 import com.digital.restaraunt.navigation.BottomBar
 import com.digital.restaraunt.navigation.SetupNavGraph
 import com.digital.restaraunt.ui.theme.RestarauntTheme
-import org.koin.android.ext.android.inject
 import org.koin.compose.koinInject
-import kotlin.getValue
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,13 +24,17 @@ class MainActivity : ComponentActivity() {
             RestarauntTheme {
                 val navController = rememberNavController()
                 val profileViewModel = koinInject<ProfileViewModel>()
+                val user = profileViewModel.user.collectAsState()
                 LaunchedEffect(profileViewModel) {
                     profileViewModel.fetchProfile()
                 }
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     bottomBar = {
-                        BottomBar(navController)
+                        BottomBar(
+                            navController,
+                            user.value
+                        )
                     }
                 ) { innerPadding ->
                     Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {

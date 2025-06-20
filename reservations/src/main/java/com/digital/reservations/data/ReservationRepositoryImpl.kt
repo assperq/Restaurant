@@ -1,6 +1,7 @@
 package com.digital.reservations.data
 
 
+import android.provider.SyncStateContract.Helpers.update
 import com.digital.reservations.domain.ReservationRepository
 import com.digital.reservations.domain.Table
 import com.digital.reservations.domain.TableStatus
@@ -31,6 +32,31 @@ class ReservationRepositoryImpl(
                 x = it.x,
                 y = it.y
             )
+        }
+    }
+
+    override suspend fun getTablesToday(): List<Table> {
+        return postgrest.from("tables")
+            .select()
+            .decodeList<TodayTableDto>().map {
+            Table(
+                id = it.id,
+                waiterId = it.waiterId,
+                status = TableStatus.valueOf(it.status.uppercase()),
+                x = it.x,
+                y = it.y
+            )
+        }
+    }
+
+    override suspend fun updateTableStatus(
+        tableId: Int,
+        tableStatus: TableStatus
+    ) {
+        postgrest.from("tables").update(mapOf("status" to tableStatus.name.lowercase())) {
+            filter {
+                eq("id", tableId)
+            }
         }
     }
 

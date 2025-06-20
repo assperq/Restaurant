@@ -15,9 +15,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.digital.order.presentation.navigation.OrderRoutes
 import com.digital.order.presentation.screens.OrderScreen
-import com.digital.profile.domain.Profile
 import com.digital.profile.presentation.ProfileViewModel
 import com.digital.profile.presentation.navigation.ProfileRoutes
+import com.digital.profile.presentation.screens.AllOrdersScreen
 import com.digital.profile.presentation.screens.AllReservationsScreen
 import com.digital.profile.presentation.screens.ProfileScreen
 import com.digital.registration.presentation.AuthViewModel
@@ -27,7 +27,8 @@ import com.digital.registration.presentation.screens.LoginScreen
 import com.digital.registration.presentation.screens.MainAuthScreen
 import com.digital.registration.presentation.screens.RegistrationScreen
 import com.digital.reservations.presentation.navigation.ReservationRoutes
-import com.digital.reservations.presentation.screens.ReservationScreen
+import com.digital.reservations.presentation.screens.hall.HallScreen
+import com.digital.reservations.presentation.screens.reservation.ReservationScreen
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -122,7 +123,7 @@ fun SetupNavGraph(
                         navController.navigate(ProfileRoutes.AllReservationRoute.route)
                     },
                     onViewAllOrders = {
-
+                        navController.navigate(ProfileRoutes.AllOrdersRoute.route)
                     }
                 )
             }
@@ -148,8 +149,19 @@ fun SetupNavGraph(
 
         composable(OrderRoutes.MainOrderRoute.route) {
             OrderScreen(
+                profile = user.value,
                 onOrderSuccess = {}
             )
+        }
+
+        composable(ProfileRoutes.AllOrdersRoute.route) {
+            AllOrdersScreen {
+                navController.navigateUp()
+            }
+        }
+
+        composable(ReservationRoutes.Hall.route) {
+            HallScreen()
         }
     }
 }

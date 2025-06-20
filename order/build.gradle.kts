@@ -76,4 +76,5 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(project(":profile"))
     implementation(project(":reservations"))
+    implementation(project(":payment"))
 }

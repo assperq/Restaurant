@@ -1,6 +1,5 @@
-package com.digital.reservations.presentation.screens
+package com.digital.reservations.presentation.screens.hall
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -9,11 +8,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -24,9 +23,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.digital.reservations.domain.Table
+import com.digital.reservations.domain.TableStatus
 import com.digital.reservations.presentation.ReservationViewModel
+import com.digital.reservations.presentation.screens.DatePickerField
+import com.digital.reservations.presentation.screens.ErrorDialog
+import com.digital.reservations.presentation.screens.TableLayout
+import com.digital.reservations.presentation.screens.reservation.TableDetailsView
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
@@ -37,7 +40,7 @@ import kotlinx.datetime.toLocalDateTime
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun ReservationScreen(
+fun HallScreen(
     reservationViewModel: ReservationViewModel = koinViewModel()
 ) {
     val tables = remember {
@@ -77,6 +80,7 @@ fun ReservationScreen(
     }
 
     LaunchedEffect(reservationViewModel) {
+        reservationViewModel.fetchTablesToday()
         reservationViewModel.state.collect {
             when(it) {
                 ReservationViewModel.State.Default -> {
@@ -95,18 +99,12 @@ fun ReservationScreen(
                     }
                 }
                 is ReservationViewModel.State.Error -> {
-                    dialogTitle = "Ошибка бронирования"
+                    dialogTitle = "Ошибка изменения статуса"
                     dialogText = it.throwable.message?.take(100).toString()
                     showDialog = true
                 }
             }
         }
-    }
-
-    var selectedDate : LocalDate by remember {
-        mutableStateOf(
-            Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date.plus(1, DateTimeUnit.DAY)
-        )
     }
 
     var selectedTable : Table? by remember {
@@ -119,10 +117,12 @@ fun ReservationScreen(
         sheetBackgroundColor = MaterialTheme.colorScheme.background,
         sheetContent = {
             selectedTable?.let {
-                TableDetailsView(
+                TableInHallDetailsView(
                     it
-                ) { table, peopleCount ->
-                    reservationViewModel.reserveTable(table.id, peopleCount, selectedDate)
+                ) { table ->
+                    val newStatus = if (table.status == TableStatus.FREE)
+                        TableStatus.BUSY else TableStatus.FREE
+                    reservationViewModel.changeTableStatus(table.id, newStatus)
                     coroutineScope.launch {
                         bottomSheetState.hide()
                     }
@@ -136,33 +136,17 @@ fun ReservationScreen(
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-            DatePickerField(
-                selectedDate = selectedDate,
-                onDateChange = {
-                    selectedDate = it
-                    reservationViewModel.fetchTables(it)
-                }
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            if (isLoading.value) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
-                }
-            } else {
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth()
-                ) {
-                    TableLayout(tables = tables.value, onTableClick = { table ->
-                        selectedTable = table
-                        coroutineScope.launch {
-                            bottomSheetState.show()
-                        }
-                    })
-                }
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+            ) {
+                TableLayout(tables = tables.value, onTableClick = { table ->
+                    selectedTable = table
+                    coroutineScope.launch {
+                        bottomSheetState.show()
+                    }
+                })
             }
         }
     }

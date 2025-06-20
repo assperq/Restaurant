@@ -68,6 +68,20 @@ class ProfileRepositoryImpl(
         }
     }
 
+    override suspend fun getTodayReservations(): List<ReservationModel> {
+        return supabaseClient.postgrest.rpc(
+            "get_today_reservations"
+        ).decodeList<ReservationDto>().map {
+            ReservationModel(
+                id = it.id,
+                tableId = it.tableId,
+                status = ReservationStatus.valueOf(it.status.uppercase()),
+                reservationDate = it.reservationDate.toLocalDateTime(TimeZone.currentSystemDefault()),
+                peopleCount = it.peopleCount
+            )
+        }
+    }
+
     override suspend fun updateReservationStatus(
         reservationId: Int,
         status: ReservationStatus

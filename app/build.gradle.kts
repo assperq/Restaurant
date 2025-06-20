@@ -76,4 +76,5 @@ dependencies {
     implementation(project(":registration"))
     implementation(project(":profile"))
     implementation(project(":order"))
+    implementation(project(":payment"))
 }

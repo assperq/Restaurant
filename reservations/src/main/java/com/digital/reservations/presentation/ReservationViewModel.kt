@@ -6,6 +6,7 @@ import com.digital.profile.domain.ProfileRepository
 import com.digital.profile.presentation.ProfileViewModel
 import com.digital.reservations.domain.ReservationRepository
 import com.digital.reservations.domain.Table
+import com.digital.reservations.domain.TableStatus
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -53,6 +54,21 @@ class ReservationViewModel(
         coroutineScope.launch {
             _state.value = State.Loading
             _state.value = State.Success(repository.getTables(date))
+        }
+    }
+
+    fun fetchTablesToday() {
+        coroutineScope.launch {
+            _state.value = State.Loading
+            _state.value = State.Success(repository.getTablesToday())
+        }
+    }
+
+    fun changeTableStatus(tableId : Int, status: TableStatus) {
+        coroutineScope.launch {
+            _state.value = State.Loading
+            repository.updateTableStatus(tableId, status)
+            _state.value = State.Success(repository.getTablesToday())
         }
     }
 

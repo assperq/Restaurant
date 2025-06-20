@@ -3,9 +3,9 @@ package com.digital.restaraunt.navigation
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.RestaurantMenu
+import androidx.compose.material.icons.filled.TableRestaurant
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -20,17 +20,25 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.digital.order.presentation.navigation.OrderRoutes
+import com.digital.profile.domain.Profile
+import com.digital.profile.domain.UserRole
 import com.digital.registration.presentation.navigation.AuthRoutes
 import com.digital.reservations.presentation.navigation.ReservationRoutes
-import com.digital.reservations.presentation.screens.ReservationScreen
 
 @Composable
-fun BottomBar(navController : NavController) {
-    val items = listOf(
-        NavItem("Бронирование", ReservationRoutes.Reservation.route, Icons.Default.CalendarMonth),
+fun BottomBar(
+    navController : NavController,
+    profile: Profile?
+) {
+    val items = mutableListOf(
+        NavItem("Бронь", ReservationRoutes.Reservation.route, Icons.Default.CalendarMonth),
         NavItem("Меню", OrderRoutes.MainOrderRoute.route, Icons.Default.RestaurantMenu),
         NavItem("Профиль", AuthRoutes.MainRoute.route, Icons.Default.Person)
     )
+
+    if (profile != null && profile.role == UserRole.ADMIN) {
+        items.add(NavItem("Зал", ReservationRoutes.Hall.route, Icons.Default.TableRestaurant))
+    }
 
     NavigationBar {
         val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route

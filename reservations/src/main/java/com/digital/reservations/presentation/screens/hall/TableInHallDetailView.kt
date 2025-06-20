@@ -1,4 +1,4 @@
-package com.digital.reservations.presentation.screens
+package com.digital.reservations.presentation.screens.hall
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -14,13 +14,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocalFlorist
+import androidx.compose.material3.Card
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -35,14 +35,17 @@ import androidx.compose.ui.unit.sp
 import com.digital.reservations.domain.Table
 import com.digital.reservations.domain.TableStatus
 import androidx.compose.ui.graphics.Color
+import com.digital.reservations.presentation.screens.BaseText
+import com.digital.reservations.presentation.screens.DefaultButton
+import com.digital.reservations.presentation.screens.reservation.ChairView
 
 @Composable
-fun TableDetailsView(
+fun TableInHallDetailsView(
     table: Table,
     tableSize: Dp = 160.dp,
     chairSize: Dp = 32.dp,
     colorScheme: ColorScheme = MaterialTheme.colorScheme,
-    onReserveClick : (Table, Int) -> Unit
+    onReserveClick : (Table) -> Unit
 ) {
     val backgroundColor = when (table.status) {
         TableStatus.FREE -> colorScheme.secondary
@@ -98,35 +101,19 @@ fun TableDetailsView(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        var selectedCount by remember { mutableIntStateOf(1) }
-
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            BaseText("Гости:", color = MaterialTheme.colorScheme.onBackground)
-
-            (1..4).forEach { count ->
-                FilterChip(
-                    selected = selectedCount == count,
-                    onClick = { selectedCount = count },
-                    label = { BaseText(count.toString(),
-                        color = if (selectedCount == count) MaterialTheme.colorScheme.onPrimary
-                            else MaterialTheme.colorScheme.onSecondary)
-                    },
-                    shape = CircleShape,
-                    colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = MaterialTheme.colorScheme.primary
-                    )
-                )
-            }
+            BaseText("Cтатус стола:", color = MaterialTheme.colorScheme.onBackground, fontSize = 22.sp)
+            BaseText(table.status.russianName, color = MaterialTheme.colorScheme.onBackground, fontSize = 22.sp)
         }
 
         Spacer(modifier = Modifier.height(16.dp))
         DefaultButton(
-            onClick = { onReserveClick(table, selectedCount) },
+            onClick = { onReserveClick(table) },
         ) {
-            BaseText("Забронировать", color = colorScheme.onPrimary)
+            BaseText("Изменить статус стола", color = colorScheme.onPrimary)
         }
     }
 }
@@ -137,6 +124,6 @@ fun ChairView(size: Dp, color:Color) {
         modifier = Modifier
             .size(size)
             .background(color, CircleShape)
-            .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape)
+            .border(1.dp, colorScheme.outline, CircleShape)
     )
 }

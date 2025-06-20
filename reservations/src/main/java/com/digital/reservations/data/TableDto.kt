@@ -12,3 +12,12 @@ data class TableDto(
     @SerialName("x") val x : Int,
     @SerialName("y") val y : Int
 )
+
+@Serializable
+data class TodayTableDto(
+    @SerialName("id") val id : Int,
+    @SerialName("waiter_id") val waiterId : Int,
+    @SerialName("status") val status : String,
+    @SerialName("x") val x : Int,
+    @SerialName("y") val y : Int
+)

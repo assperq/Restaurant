@@ -3,6 +3,7 @@ package com.digital.restaraunt
 import android.app.Application
 import com.digital.restaraunt.di.authModule
 import com.digital.restaraunt.di.orderModule
+import com.digital.restaraunt.di.paymentModule
 import com.digital.restaraunt.di.profileModule
 import com.digital.restaraunt.di.reservationModule
 import com.digital.restaraunt.di.supabaseModule
@@ -19,7 +20,8 @@ class RestaurantApplication : Application() {
                 reservationModule,
                 authModule,
                 profileModule,
-                orderModule
+                orderModule,
+                paymentModule
             )
         }
     }

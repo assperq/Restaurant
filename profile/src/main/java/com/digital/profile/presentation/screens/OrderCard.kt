@@ -31,7 +31,8 @@ import com.digital.profile.presentation.getDateFromInstant
 @Composable
 fun OrderCard(
     order: UserOrder,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    modifier: Modifier? = null
 ) {
     val (bgColor, statusLabel, icon) = when (order.status) {
         OrderStatus.CREATED -> Triple(
@@ -52,10 +53,11 @@ fun OrderCard(
     }
 
     Card(
-        modifier = Modifier
-            .width(160.dp)
-            .height(110.dp)
-            .clickable { onClick() },
+        modifier = modifier?.height(120.dp)?.clickable { onClick() }
+            ?: Modifier
+                .width(180.dp)
+                .height(120.dp)
+                .clickable { onClick() },
         colors = CardDefaults.cardColors(containerColor = bgColor),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {

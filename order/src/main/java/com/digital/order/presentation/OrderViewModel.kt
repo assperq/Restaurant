@@ -10,10 +10,16 @@ import com.digital.order.domain.DishModel
 import com.digital.order.domain.DishOrderModel
 import com.digital.order.domain.OrderRepository
 import com.digital.order.domain.OrderResult
+import com.digital.payment.domain.CardData
+import com.digital.payment.domain.PaymentInterface
 import com.digital.profile.domain.ProfileRepository
 import com.digital.profile.presentation.ProfileViewModel
 import com.digital.reservations.domain.ReservationRepository
 import com.digital.reservations.domain.Table
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
@@ -25,7 +31,8 @@ import org.koin.core.KoinApplication.Companion.init
 class OrderViewModel(
     private val repository: OrderRepository,
     private val reservationRepository: ReservationRepository,
-    private val profileViewModel: ProfileViewModel
+    private val profileViewModel: ProfileViewModel,
+    private val paymentInterface: PaymentInterface
 ) : ViewModel() {
     private val _dishes = mutableStateListOf<DishModel>()
     val dishes: List<DishModel> = _dishes
@@ -37,16 +44,22 @@ class OrderViewModel(
 
     val isTableDialogVisible = mutableStateOf(false)
 
-    private val _isLoading = mutableStateOf(false)
-    val isLoading: Boolean = _isLoading.value
+    val isLoading = mutableStateOf(false)
 
     val orderResult = mutableStateOf<OrderResult?>(null)
 
     var tables: List<Table> = emptyList()
 
+    val error = mutableStateOf<Throwable?>(null)
+    private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        error.value = throwable
+        isLoading.value = false
+    }
+    private val coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob() + exceptionHandler)
+
     init {
         viewModelScope.launch {
-            _isLoading.value = true
+            isLoading.value = true
             try {
                 _dishes.addAll(repository.getDishesList())
                 tables = reservationRepository
@@ -55,7 +68,7 @@ class OrderViewModel(
                 Log.d("LOG", e.message.toString())
             }
             finally {
-                _isLoading.value = false
+                isLoading.value = false
             }
         }
     }
@@ -89,16 +102,22 @@ class OrderViewModel(
         orderResult.value = null
     }
 
-    suspend fun makeOrder(): Boolean {
-        if (selectedTable.value == null) return false
+    fun clearError() {
+        error.value = null
+    }
 
-        val userId = profileViewModel.user.value?.id ?: return false
-        val dishes = _cart.map {
-            DishOrderModel(it.key.id, it.value)
-        }
+    fun makeOrder(cardData: CardData) {
+        coroutineScope.launch {
+            if (selectedTable.value == null) throw Exception("Вы не выбрали стол")
 
-        _isLoading.value = true
-        return try {
+            val userId = profileViewModel.user.value?.id ?: throw Exception("Вы не вошли в аккаунт")
+            val dishes = _cart.map {
+                DishOrderModel(it.key.id, it.value)
+            }
+            isLoading.value = true
+            if (!paymentInterface.pay(cardData)) {
+                throw Exception("Оплата не прошла (проверьте соединение с интернетом или баланс карты)")
+            }
             val result = repository.makeOrder(
                 tableId = selectedTable.value!!.id,
                 userId = userId,
@@ -109,12 +128,31 @@ class OrderViewModel(
                 _cart.clear()
                 selectedTable.value = null
             }
-            result.success
-        } catch (e: Exception) {
-            Log.d("LOG", e.message.toString())
-            false
-        } finally {
-            _isLoading.value = false
+            isLoading.value = false
+        }
+    }
+
+    fun makeOrderWithTerminal() {
+        coroutineScope.launch {
+            if (selectedTable.value == null) throw Exception("Вы не выбрали стол")
+
+            val userId = profileViewModel.user.value?.id ?: throw Exception("Вы не вошли в аккаунт")
+            val dishes = _cart.map {
+                DishOrderModel(it.key.id, it.value)
+            }
+
+            isLoading.value = true
+            val result = repository.makeOrder(
+                tableId = selectedTable.value!!.id,
+                userId = userId,
+                dishes = dishes
+            )
+            orderResult.value = result
+            if (result.success) {
+                _cart.clear()
+                selectedTable.value = null
+            }
+            isLoading.value = false
         }
     }
 }
