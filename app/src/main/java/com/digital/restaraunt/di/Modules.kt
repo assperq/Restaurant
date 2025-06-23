@@ -6,8 +6,11 @@ import com.digital.order.presentation.OrderViewModel
 import com.digital.payment.data.PaymentInterfaceImpl
 import com.digital.payment.domain.PaymentInterface
 import com.digital.profile.data.ProfileRepositoryImpl
+import com.digital.profile.data.StatisticsRepositoryImpl
 import com.digital.profile.domain.ProfileRepository
+import com.digital.profile.domain.StatisticsRepository
 import com.digital.profile.presentation.ProfileViewModel
+import com.digital.profile.presentation.StatisticsViewModel
 import com.digital.registration.data.AuthRepositoryImpl
 import com.digital.registration.domain.AuthRepository
 import com.digital.registration.presentation.AuthViewModel
@@ -50,7 +53,9 @@ val authModule = module {
 
 val profileModule = module {
     single<ProfileRepository> { ProfileRepositoryImpl(get()) }
+    single<StatisticsRepository> { StatisticsRepositoryImpl(get()) }
     single<ProfileViewModel> { ProfileViewModel(get()) }
+    viewModel<StatisticsViewModel> { StatisticsViewModel(get()) }
 }
 
 val orderModule = module {

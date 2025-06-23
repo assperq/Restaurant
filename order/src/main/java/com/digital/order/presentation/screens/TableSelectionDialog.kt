@@ -66,7 +66,7 @@ fun OrderPlacementDialog(
                     )
                 }
                 2 -> {
-                    if (profile != null && profile.role == UserRole.CLIENT) {
+                    if (profile == null || profile.role == UserRole.CLIENT) {
 
                         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                             OutlinedTextField(
@@ -138,12 +138,13 @@ fun OrderPlacementDialog(
                     && validityPeriod.text.length == 5
                     && cvcCode.length == 3
             Button(
-                enabled = (step == 1 && selectedTable != null) || (step == 2 && isCardValid),
+                enabled = (step == 1 && selectedTable != null)
+                        || (step == 2 && (isCardValid || (profile != null && profile.role == UserRole.ADMIN))),
                 onClick = {
                     if (step == 1) {
                         step = 2
                     } else {
-                        val card = if (profile != null && profile.role == UserRole.CLIENT) {
+                        val card = if (profile == null || profile.role == UserRole.CLIENT) {
                             CardData(
                                 cardNumber.text,
                                 validityPeriod.text,

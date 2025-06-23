@@ -16,7 +16,7 @@ class OrderRepositoryImpl(
 ) : OrderRepository {
     override suspend fun makeOrder(
         tableId: Int,
-        userId: String,
+        userId: String?,
         dishes: List<DishOrderModel>
     ) : OrderResult {
         return supabaseClient.postgrest.rpc(

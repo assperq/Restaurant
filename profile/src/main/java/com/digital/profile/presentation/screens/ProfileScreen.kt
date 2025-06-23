@@ -45,7 +45,9 @@ import com.digital.profile.domain.Profile
 import com.digital.profile.domain.ReservationModel
 import com.digital.profile.domain.ReservationStatus
 import com.digital.profile.domain.UserRole
+import com.digital.profile.domain.WaiterStats
 import com.digital.profile.presentation.ProfileViewModel
+import com.digital.profile.presentation.screens.statistics.WaiterStatsScreen
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -177,6 +179,10 @@ fun ProfileScreen(
                             }
                         )
                     }
+                }
+
+                if (profile.role == UserRole.ADMIN) {
+                    WaiterStatsScreen()
                 }
             }
         }

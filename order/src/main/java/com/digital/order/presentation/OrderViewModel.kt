@@ -110,7 +110,7 @@ class OrderViewModel(
         coroutineScope.launch {
             if (selectedTable.value == null) throw Exception("Вы не выбрали стол")
 
-            val userId = profileViewModel.user.value?.id ?: throw Exception("Вы не вошли в аккаунт")
+            val userId = profileViewModel.user.value?.id
             val dishes = _cart.map {
                 DishOrderModel(it.key.id, it.value)
             }
@@ -136,7 +136,7 @@ class OrderViewModel(
         coroutineScope.launch {
             if (selectedTable.value == null) throw Exception("Вы не выбрали стол")
 
-            val userId = profileViewModel.user.value?.id ?: throw Exception("Вы не вошли в аккаунт")
+            val userId = profileViewModel.user.value?.id
             val dishes = _cart.map {
                 DishOrderModel(it.key.id, it.value)
             }
