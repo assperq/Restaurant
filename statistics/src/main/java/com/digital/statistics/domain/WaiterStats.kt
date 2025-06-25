@@ -1,4 +1,4 @@
-package com.digital.profile.domain
+package com.digital.statistics.domain
 
 import kotlinx.datetime.LocalDate
 

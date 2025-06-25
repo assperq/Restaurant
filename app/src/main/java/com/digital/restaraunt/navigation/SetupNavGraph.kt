@@ -29,6 +29,8 @@ import com.digital.registration.presentation.screens.RegistrationScreen
 import com.digital.reservations.presentation.navigation.ReservationRoutes
 import com.digital.reservations.presentation.screens.hall.HallScreen
 import com.digital.reservations.presentation.screens.reservation.ReservationScreen
+import com.digital.statistics.presentation.StatisticsScreen
+import com.digital.statistics.presentation.navigation.StatisticsRoutes
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -124,6 +126,9 @@ fun SetupNavGraph(
                     },
                     onViewAllOrders = {
                         navController.navigate(ProfileRoutes.AllOrdersRoute.route)
+                    },
+                    onStatisticsScreen = {
+                        navController.navigate(StatisticsRoutes.StatisticsRoute.route)
                     }
                 )
             }
@@ -162,6 +167,10 @@ fun SetupNavGraph(
 
         composable(ReservationRoutes.Hall.route) {
             HallScreen()
+        }
+
+        composable(StatisticsRoutes.StatisticsRoute.route) {
+            StatisticsScreen()
         }
     }
 }

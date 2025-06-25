@@ -6,17 +6,17 @@ import com.digital.order.presentation.OrderViewModel
 import com.digital.payment.data.PaymentInterfaceImpl
 import com.digital.payment.domain.PaymentInterface
 import com.digital.profile.data.ProfileRepositoryImpl
-import com.digital.profile.data.StatisticsRepositoryImpl
 import com.digital.profile.domain.ProfileRepository
-import com.digital.profile.domain.StatisticsRepository
 import com.digital.profile.presentation.ProfileViewModel
-import com.digital.profile.presentation.StatisticsViewModel
 import com.digital.registration.data.AuthRepositoryImpl
 import com.digital.registration.domain.AuthRepository
 import com.digital.registration.presentation.AuthViewModel
 import com.digital.reservations.data.ReservationRepositoryImpl
 import com.digital.reservations.domain.ReservationRepository
 import com.digital.reservations.presentation.ReservationViewModel
+import com.digital.statistics.data.StatisticsRepositoryImpl
+import com.digital.statistics.domain.StatisticsRepository
+import com.digital.statistics.presentation.StatisticsViewModel
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.createSupabaseClient
@@ -24,9 +24,6 @@ import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.realtime.Realtime
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
-import java.lang.invoke.VarHandle.AccessMode.GET
-import kotlin.math.sign
-import kotlin.math.sin
 
 val supabaseModule = module {
     single<SupabaseClient> {
@@ -53,8 +50,11 @@ val authModule = module {
 
 val profileModule = module {
     single<ProfileRepository> { ProfileRepositoryImpl(get()) }
-    single<StatisticsRepository> { StatisticsRepositoryImpl(get()) }
     single<ProfileViewModel> { ProfileViewModel(get()) }
+}
+
+val statisticsModule = module {
+    single<StatisticsRepository> { StatisticsRepositoryImpl(get()) }
     viewModel<StatisticsViewModel> { StatisticsViewModel(get()) }
 }
 

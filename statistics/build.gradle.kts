@@ -1,21 +1,19 @@
 plugins {
-    alias(libs.plugins.android.application)
+    alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    kotlin("plugin.serialization") version "2.1.20"
 }
 
 android {
-    namespace = "com.digital.restaraunt"
+    namespace = "com.digital.statistics"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.digital.restaraunt"
-        minSdk = 26
-        targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        minSdk = 24
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles("consumer-rules.pro")
     }
 
     buildTypes {
@@ -34,13 +32,9 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
-    buildFeatures {
-        compose = true
-    }
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -57,25 +51,23 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    //implementation("com.google.accompanist:accompanist-animation:0.34.0")
+
     implementation(libs.androidx.navigation.compose)
     implementation(libs.koin.core)
-    testImplementation(libs.koin.test)
     implementation(libs.koin.androidx.compose)
     implementation(libs.koin.androidx.compose.viewmodel)
     implementation(libs.koin.android)
+    testImplementation(libs.koin.test)
+
+    implementation(libs.kotlinx.datetime)
 
     implementation(platform(libs.supabase.bom))
     implementation(libs.supabase.postgrest.kt)
     implementation(libs.supabase.auth.kt)
     implementation(libs.supabase.realtime.kt)
 
-    implementation(libs.ktor.client.cio)
     implementation(libs.androidx.material.icons.extended)
 
-    implementation(project(":reservations"))
-    implementation(project(":registration"))
-    implementation(project(":profile"))
-    implementation(project(":order"))
-    implementation(project(":payment"))
-    implementation(project(":statistics"))
+    implementation(libs.kotlinx.serialization.json)
 }

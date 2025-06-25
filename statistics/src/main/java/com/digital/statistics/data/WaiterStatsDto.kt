@@ -1,6 +1,6 @@
-package com.digital.profile.data
+package com.digital.statistics.data
 
-import com.digital.profile.domain.WaiterStats
+import com.digital.statistics.domain.WaiterStats
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.datetime.LocalDate
@@ -25,11 +25,8 @@ fun WaiterStatsDto.toWaiterStats(): WaiterStats {
     if (ordersDiff != null && checksDiff != null && sumDiff != null) {
         isImproving = ordersDiff >= 0 && checksDiff >= 0 && sumDiff >= 0
     }
-
-
     val (year, month) = period.split("-").map { it.toInt() }
     val periodDate = LocalDate(year, month, 1)
-
     return WaiterStats(
         periodDate = periodDate,
         fullName = fullName,
